@@ -1,0 +1,34 @@
+import { BLOCKCHAIN_NETWORK } from "@/types";
+
+export const CANDOR_ADDYS: {
+  [network in BLOCKCHAIN_NETWORK]: {
+    candor: string;
+    candorSpHook: string;
+    worldId: string;
+  };
+} = {
+  [BLOCKCHAIN_NETWORK.BASE_SEPOLIA]: {
+    candor: "0x9341BEC4A59ae34f628D978f194b451Bc639bF7D",
+    candorSpHook: "0x2987a9b18b1d8FA449DF81406922008bebE31020",
+    worldId: "0x0000000000000000000000000000000000000000",
+  },
+  [BLOCKCHAIN_NETWORK.POLYGON_AMOY]: {
+    candor: "0x0000000000000000000000000000000000000000",
+    candorSpHook: "0x0000000000000000000000000000000000000000",
+    worldId: "0x0000000000000000000000000000000000000000",
+  },
+  [BLOCKCHAIN_NETWORK.MANTLE_SEPOLIA]: {
+    candor: "0x0000000000000000000000000000000000000000",
+    candorSpHook: "0x0000000000000000000000000000000000000000",
+    worldId: "0x0000000000000000000000000000000000000000",
+  },
+};
+
+export const getCandorAddress = (chain: BLOCKCHAIN_NETWORK) =>
+  CANDOR_ADDYS[chain].candor;
+
+export const getCandorSpHookAddress = (chain: BLOCKCHAIN_NETWORK) =>
+  CANDOR_ADDYS[chain].candorSpHook;
+
+export const getWorldIdAddress = (chain: BLOCKCHAIN_NETWORK) =>
+  CANDOR_ADDYS[chain].worldId;
