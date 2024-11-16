@@ -53,6 +53,7 @@ export const Pledge = ({
     //send verift command
     const payload = await MiniKit.commandsAsync.verify(verifyPayload);
     console.log("minikit payload: ", payload);
+    onPledge(payload.finalPayload as ISuccessResult, rating, comments);
   };
 
   //testing here: https://simulator.worldcoin.org/select-id
@@ -141,8 +142,8 @@ export const Pledge = ({
                   disableShadow
                   onClick={open}
                   disabled={finalDisabled}
+                  isLoading={isLoading}
                 >
-                  {isLoading && <Spinner size="sm" className="mr-2" />}
                   Pledge (Verify with World ID)
                 </PrimaryButton>
               )}
@@ -154,8 +155,8 @@ export const Pledge = ({
               disableShadow
               disabled={finalDisabled}
               onClick={minikitSendVerifyAction}
+              isLoading={isLoading}
             >
-              {isLoading && <Spinner size="sm" className="mr-2" />}
               Pledge (Verify inside MiniApp)
             </PrimaryButton>
           )}

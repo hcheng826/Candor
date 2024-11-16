@@ -8,7 +8,7 @@ import Link from "next/link";
 import { TypeAnimation } from "react-type-animation";
 
 export const BgImage = styled.div`
-  background-image: url("/town.png");
+  background-image: url("/town-home.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -21,6 +21,57 @@ export const BgImage = styled.div`
   left: 50%;
   transform: translateX(-50%);
   opacity: 0.7;
+`;
+
+export const BgHouse = styled.div`
+  background-image: url("/house.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 300px;
+  height: 250px;
+  opacity: 0.8;
+
+  position: fixed;
+  bottom: 10%;
+  left: 55%;
+  transform: translateX(-50%);
+
+  &::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 0%;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    animation: heartbeat 1.5s infinite;
+    animation-delay: 0.5s;
+    background-image: url("/heart.svg");
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 90%;
+    left: 0%;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    animation: heartbeat 1.5s infinite;
+    background-image: url("/heart.svg");
+  }
+
+  @keyframes heartbeat {
+    0% {
+      transform: scale(1) translate(0, 0);
+      opacity: 1;
+    }
+    // 50% { transform: scale(1.2) translate(-10px, -10px); opacity: 0.5 }
+    100% {
+      transform: scale(1.4) translate(-20px, -20px);
+      opacity: 0;
+    }
+  }
 `;
 
 const StyledTitle = styled.h1`
@@ -53,13 +104,14 @@ export const Home = () => {
   return (
     <div className="w-full h-full">
       <BgImage />
+      <BgHouse />
       <div
         className="z-10 relative flex flex-col justify-center h-[90vh] w-full max-w-[500px] sm:max-w-[88%] mx-auto"
         style={{}}
       >
-        <StyledTitle>CharityVille</StyledTitle>
+        <StyledTitle>Candor</StyledTitle>
         <StyledSubtitle>
-          A unified donation platform for charities
+          rooted in trust & fairness - By the community, for the community
         </StyledSubtitle>
 
         <div className="flex gap-4 mt-6 flex-wrap justify-center sm:justify-start">
@@ -102,7 +154,7 @@ export const Home = () => {
           <div className="absolute -top-[10%] -left-[61%]">
             <TypeAnimation
               sequence={[
-                `Welcome to Charityville Together, we can uplift communities, spread hope, and create lasting change. Let your generosity shine and transform lives—one contribution at a time!`,
+                `Welcome donors, we are candor who has purpose to uplift communities, spread hope, and create lasting change. Let your generosity shine and transform lives—one contribution at a time!`,
                 () => {
                   console.log("Sequence completed");
                 },

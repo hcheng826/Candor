@@ -7,15 +7,6 @@ import { UserWallet } from "@/components/LoginWallet/UserWallet";
 import { Loader } from "@/components/ui/Loader";
 import { useGetAllBeneficiaries } from "@/hooks/data";
 import { Beneficiary } from "@/types";
-import Link from "next/link";
-
-const GenericBeneficiaryData = {
-  id: "0",
-  address: "0xb78ce55Df582074F4cC7cDB2888A1b7CfB021689",
-  name: "Generic Pool",
-  description: "Pooled funds that will be distributed to beneficiaries fairly",
-  imageUrl: "/pool.svg",
-} as Beneficiary;
 
 export const ChoosePool = ({
   onChooseDonate,
@@ -28,17 +19,11 @@ export const ChoosePool = ({
   return (
     <ShadowedContainer className="w-[90%] max-w-[560px] min-h-[540px]">
       <div className="flex justify-between items-center  mb-6 px-4">
-        <div className="text-2xl font-bold text-center">
-          Choose your beneficiary
-        </div>
+        <div className="text-2xl font-bold ">Choose your beneficiary</div>
         <UserWallet />
       </div>
 
       <div className="px-4">
-        <BeneficiaryCard
-          beneficiary={GenericBeneficiaryData}
-          onChoose={onChooseDonate}
-        />
         {!beneficiaries?.length && (
           <div className="flex justify-center items-center h-[200px]">
             <Loader style={{ width: "28px", height: "28px" }} />
@@ -88,7 +73,7 @@ export const BeneficiaryCard = ({
               Donate
             </PrimaryButton>
           )}
-          {onPledge && (
+          {beneficiary.id !== "0" && onPledge && (
             <FinalSecondaryButton
               className="text-sm min-w-[initial] rounded-lg"
               disableShadow

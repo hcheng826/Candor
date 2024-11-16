@@ -47,7 +47,7 @@ export const SuccessDonation = ({
       </div>
 
       <div className="px-4">
-        <div className="relative w-[160px] h-[160px] mx-auto">
+        <div className="relative w-[160px] mx-auto">
           <Image
             src="/character.svg"
             alt="character"

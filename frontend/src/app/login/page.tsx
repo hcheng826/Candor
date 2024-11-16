@@ -9,10 +9,8 @@ import { useEffect } from "react";
 export default function Page() {
   const params = useSearchParams();
   const target = params.get("target");
-  const { walletAddress } = useWallet();
+  const { walletAddress, isMiniApp, miniAppAddress } = useWallet();
   const router = useRouter();
-
-  console.log('walletAddress: ', walletAddress)
 
   useEffect(() => {
     if (target === "dashboard" && !!walletAddress) {
@@ -22,11 +20,14 @@ export default function Page() {
   }, [target, walletAddress]);
 
   useEffect(() => {
-    if (target === "donation-widget" && !!walletAddress) {
+    if (target === "donation-widget" && !!walletAddress && !isMiniApp) {
+      console.log("redirecting to donation-widget");
+      router.replace("/donation-widget");
+    } else if (target === "donation-widget" && !!miniAppAddress && isMiniApp) {
       console.log("redirecting to donation-widget");
       router.replace("/donation-widget");
     }
-  }, [target, walletAddress]);
+  }, [target, walletAddress, isMiniApp]);
 
   return (
     <div className="w-full h-full min-h-screen flex justify-center items-center">

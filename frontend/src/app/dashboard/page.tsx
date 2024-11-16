@@ -21,6 +21,7 @@ import Link from "next/link";
 import { formatDate } from "@/utils";
 import { PrimaryButton } from "@/components/Button/PrimaryButton";
 import { useRouter } from "next/navigation";
+import { Loader } from "@/components/ui/Loader";
 
 export default function Page() {
   const HARDCODED_WALLET = "0xb78ce55df582074f4cc7cdb2888a1b7cfb021689";
@@ -60,8 +61,8 @@ export default function Page() {
     <div className="w-full h-full min-h-screen flex flex-col justify-center items-center overflow-hidden">
       <BgImage />
       <ShadowedContainer className="w-full max-w-[760px] min-h-[140px]">
-        <div className="flex items-start gap-2 justify-between">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-start gap-2 justify-between flex-col-reverse sm:flex-row">
+          <div className="flex items-center gap-2 flex-1 min-w-[300px]">
             <Image
               src={beneficiary?.imageUrl}
               alt="logo"
@@ -208,6 +209,11 @@ export default function Page() {
               ))}
             </Table.Body>
           </Table.Root>
+          {isTxsLoading && (
+            <div className="text-2xl mt-6 flex justify-center items-center">
+              <Loader style={{ width: "24px", height: "24px" }} />
+            </div>
+          )}
         </div>
       </ShadowedContainer>
     </div>

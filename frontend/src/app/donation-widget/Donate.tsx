@@ -13,9 +13,9 @@ import { useSmartWallet, useWallet } from "@/hooks/useWallet";
 import { Token } from "@/types";
 import { ChevronLeftIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ethers } from "ethers";
-import { isNativeToken, toEther } from "@/utils";
-import { ERC20_JSON_ABI } from "@/contracts/abi";
+import { Switch } from "@/components/ui/switch";
+import { Tooltip } from "@/components/ui/tooltip";
+import { useGetTokenBalance } from "@/hooks/data";
 
 const EMPTY_IMAGE =
   "https://t4.ftcdn.net/jpg/05/17/53/57/360_F_517535712_q7f9QC9X6TQxWi6xYZZbMmw5cnLMr279.jpg";
@@ -30,18 +30,26 @@ export const Donate = ({
     tokenAddress,
     amount,
     beneficiaryId,
+    isRecurring,
   }: {
     tokenAddress: string;
     amount: number;
     beneficiaryId?: string;
+    isRecurring: boolean;
   }) => void;
   isLoading?: boolean;
 }) => {
-  const { connectedChain, embeddedWallet, getRpcProvider } = useWallet();
+  const { connectedChain, embeddedWallet, getRpcProvider, miniAppAddress } =
+    useWallet();
   const { smartAccount } = useSmartWallet();
   const [token, setToken] = useState<Token | null>(null);
-  const [balance, setBalance] = useState<number>(0);
+  // const [balance, setBalance] = useState<number>(0)
   const [amount, setAmount] = useState<string>("");
+  const [recurringDonation, setRecurringDonation] = useState<boolean>(false);
+  const { data: balance } = useGetTokenBalance({
+    tokenAddress: token?.address || "",
+    tokenDecimals: token?.decimals || 0,
+  });
 
   useEffect(() => {
     if (connectedChain?.tokens) {
@@ -49,39 +57,39 @@ export const Donate = ({
     }
   }, [connectedChain]);
 
-  useEffect(() => {
-    getBalance();
-  }, [token, smartAccount]);
+  // useEffect(() => {
+  //   getBalance();
+  // }, [token, smartAccount]);
 
-  const getBalance = async () => {
-    if (!token || !smartAccount) return;
-    const [smartAddress, provider] = await Promise.all([
-      smartAccount?.account.getCounterFactualAddress(),
-      getRpcProvider(embeddedWallet),
-    ]);
-    console.log(`smart address at: ${smartAddress}`);
+  // const getBalance = async () => {
+  //   if (!token || !smartAccount) return;
+  //   const [smartAddress, provider] = await Promise.all([
+  //     smartAccount?.account.getCounterFactualAddress(),
+  //     getRpcProvider(embeddedWallet),
+  //   ]);
+  //   console.log(`smart address at: ${smartAddress}`);
 
-    if (isNativeToken(token.address)) {
-      const balanceWei = await provider?.getBalance(smartAddress);
-      const balance = toEther(balanceWei, token.decimals);
-      setBalance(balance);
-    } else {
-      const erc20Contract = new ethers.Contract(
-        token.address,
-        ERC20_JSON_ABI as any,
-        provider
-      );
-      const balanceWei = await erc20Contract.balanceOf(smartAddress);
-      const balance = toEther(balanceWei, token.decimals);
-      setBalance(balance);
-    }
-  };
+  //   if (isNativeToken(token.address)) {
+  //     const balanceWei = await provider?.getBalance(smartAddress);
+  //     const balance = toEther(balanceWei, token.decimals);
+  //     setBalance(balance);
+  //   } else {
+  //     const erc20Contract = new ethers.Contract(
+  //       token.address,
+  //       ERC20_JSON_ABI as any,
+  //       provider
+  //     );
+  //     const balanceWei = await erc20Contract.balanceOf(smartAddress);
+  //     const balance = toEther(balanceWei, token.decimals);
+  //     setBalance(balance);
+  //   }
+  // };
 
   const disabled =
-    Number(amount) > balance || !balance || Number(amount) <= 0 || isLoading;
+    !balance || Number(amount) > balance || Number(amount) <= 0 || isLoading;
   return (
     <ShadowedContainer className="w-[90%] max-w-[560px] min-h-[280px]">
-      <div className="flex justify-between items-center  mb-6 px-4">
+      <div className="flex justify-between items-center  mb-6">
         <div className="flex items-center gap-2">
           <button onClick={onGoBack}>
             <ChevronLeftIcon />
@@ -103,6 +111,20 @@ export const Donate = ({
         <div className="text-md text-gray-400 text-left mt-1">
           Balance: {balance} {token?.symbol}
         </div>
+        {/* <div>Address: {miniAppAddress}</div> */}
+        <div className="mt-2">
+          <Tooltip content="Recurring donation is supported by Biconomy smart session, learn more here">
+            <div>
+              <Switch
+                colorPalette={"red"}
+                color="gray.500"
+                onChange={() => setRecurringDonation(!recurringDonation)}
+              >
+                Enable recurring donation every month
+              </Switch>
+            </div>
+          </Tooltip>
+        </div>
 
         <div className="mt-6">
           <PrimaryButton
@@ -115,6 +137,7 @@ export const Donate = ({
               onDonate({
                 tokenAddress: token?.address || "",
                 amount: Number(amount),
+                isRecurring: recurringDonation,
               })
             }
           >

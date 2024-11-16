@@ -9,17 +9,20 @@ import {
   DEFAULT_ENTRYPOINT_ADDRESS,
   ECDSAOwnershipValidationModule,
   DEFAULT_ECDSA_OWNERSHIP_MODULE,
-  BiconomySmartAccountV2,
   BiconomyPaymaster,
   IPaymaster,
   IBundler,
   Bundler,
+  BiconomySmartAccountV2,
 } from "@biconomy/account";
+import { smartSessionCreateActions } from "@biconomy/sdk";
+import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 import {
   APP_CONFIG,
-  BLOCKCHAIN_CONFIGS,
   BlockchainConfig,
   getChainConfig,
+  WalletType,
 } from "@/config";
 import { useCallback, useEffect, useState } from "react";
 import { getRpcProvider } from "@dynamic-labs/ethers-v6";
@@ -29,9 +32,9 @@ import {
   createNexusClient,
   NexusClient,
   NexusClientConfig,
+  toSmartSessionsValidator,
 } from "@biconomy/sdk";
 import { http } from "viem";
-import { baseSepolia } from "viem/chains";
 
 const createBundler = (config: BlockchainConfig) => {
   if (config?.bundlerUrl == null) return null;
@@ -85,10 +88,10 @@ const createNexusSmartAccount = async (
 };
 
 // legacy biconomy
-const createSmartAccount = async (chainId: number, walletClient: any) => {
-  const config = getChainConfig(chainId);
-  if (!config) return;
-
+const createSmartAccount = async (
+  config: BlockchainConfig,
+  walletClient: any
+) => {
   const validationModule = await createValidationModule(walletClient);
   const bundler = createBundler(config);
   const paymaster = createPaymaster(config);
@@ -110,6 +113,11 @@ export const useWallet = () => {
   const userWallets = useUserWallets();
   const [localNonce, setLocalNonce] = useState(
     typeof window !== "undefined" ? localStorage.getItem("nonce") : null //nonce for worldID miniApp
+  );
+  const { refresh } = useGlobalStore(
+    useShallow((state) => ({
+      refresh: state.refresh,
+    }))
   );
 
   const getLocalNonce = () => {
@@ -147,26 +155,89 @@ export const useWallet = () => {
   const config = getChainConfig(chainId);
 
   return {
-    network: config?.id,
     embeddedWallet,
-    walletAddress: isMiniApp
-      ? MiniKit.walletAddress || embeddedWallet?.address || ""
-      : embeddedWallet?.address || "",
+    walletAddress: embeddedWallet?.address || "",
+    miniAppAddress: isMiniApp ? MiniKit.walletAddress : "",
     connectedChain: config,
     onLogout: handleLogOut,
     showAuthFlow: setShowAuthFlow,
     getRpcProvider: getRpcProvider as any,
     isMiniApp,
     localNonce,
+    refresh,
+    setChain: async (chainId: string | number) => {
+      await embeddedWallet?.switchNetwork(chainId);
+    },
   };
 };
 
+interface SmartSessionClient extends NexusClient {
+  grantPermission: (params: any) => Promise<any>;
+}
+const useSmartWalletStore = create<{
+  smartAccount: NexusClient | BiconomySmartAccountV2 | null;
+  smartSessionAccount: SmartSessionClient | null;
+  smartAccountChain: Record<string, boolean>;
+  setSmartAccount: (
+    smartAccount: NexusClient | BiconomySmartAccountV2 | null
+  ) => void;
+  setSmartSessionAccount: (
+    smartSessionAccount: SmartSessionClient | null
+  ) => void;
+  setSmartAccountChain: (chain: Record<string, boolean>) => void;
+}>((set) => ({
+  smartAccount: null,
+  smartSessionAccount: null,
+  smartAccountChain: {},
+  setSmartAccount: (
+    smartAccount: NexusClient | BiconomySmartAccountV2 | null
+  ) => set({ smartAccount }),
+  setSmartSessionAccount: (smartSessionAccount: SmartSessionClient | null) =>
+    set({ smartSessionAccount }),
+  setSmartAccountChain: (chain: Record<string, boolean>) =>
+    set((prevState) => ({
+      smartAccountChain: { ...prevState.smartAccountChain, ...chain },
+    })),
+}));
+
+export const useGlobalStore = create<{
+  refresh: number;
+  setRefresh: () => void;
+}>((set) => ({
+  refresh: 0,
+  setRefresh: () =>
+    set({
+      refresh: Math.floor(Math.random() * 1000000000),
+    }),
+}));
+
 export function useSmartWallet() {
-  const { embeddedWallet } = useWallet();
-  const [smartAccount, setSmartAccount] = useState<NexusClient | null>(null);
+  const { embeddedWallet, isMiniApp, connectedChain } = useWallet();
+  const {
+    smartAccount,
+    smartSessionAccount,
+    smartAccountChain,
+    setSmartAccount,
+    setSmartSessionAccount,
+    setSmartAccountChain,
+  } = useSmartWalletStore(
+    useShallow((state) => ({
+      smartAccount: state.smartAccount,
+      setSmartAccount: state.setSmartAccount,
+      smartSessionAccount: state.smartSessionAccount,
+      setSmartSessionAccount: state.setSmartSessionAccount,
+      smartAccountChain: state.smartAccountChain,
+      setSmartAccountChain: state.setSmartAccountChain,
+    }))
+  );
+  const { refresh } = useGlobalStore(
+    useShallow((state) => ({
+      refresh: state.refresh,
+    }))
+  );
 
   const createAndSetSmartAccount = useCallback(async () => {
-    if (smartAccount) return;
+    if (!connectedChain || smartAccountChain[connectedChain?.id]) return;
 
     if (!embeddedWallet) {
       console.log("no embedded wallet");
@@ -188,30 +259,106 @@ export function useSmartWallet() {
 
       const chainId = getChainIdFromEmbeddedWallet(embeddedWallet);
       const config = getChainConfig(chainId);
-      if (!config) {
+      if (config == null) {
         console.log("no chain config");
         return;
       }
 
-      const newSmartAccount = await createNexusSmartAccount(
-        config,
-        walletClient
-      );
-      setSmartAccount(newSmartAccount);
-      console.log("set smart account", newSmartAccount);
+      switch (config.walletType) {
+        case WalletType.NEXUS: {
+          const newSmartAccount = await createNexusSmartAccount(
+            config,
+            walletClient
+          );
+          if (!newSmartAccount) return;
+
+          setSmartAccount(newSmartAccount);
+          setSmartAccountChain({
+            [connectedChain?.id]: true,
+          });
+          // console.log(
+          //   "set smart account",
+          //   newSmartAccount,
+          //   connectedChain?.id,
+          //   {
+          //     [connectedChain?.id]: true,
+          //   }
+          // );
+
+          console.log(
+            "to smart session vlidator: ",
+            newSmartAccount,
+            walletClient
+          );
+          walletClient.address = walletClient.account?.address;
+          const sessionsModule = toSmartSessionsValidator({
+            account: newSmartAccount.account,
+            signer: walletClient,
+          });
+          const isSmartSessionInstalledBefore = localStorage.getItem(
+            "smartSessionInstalled"
+          );
+
+          const allAccountData =
+            (JSON.parse(isSmartSessionInstalledBefore || "{}") as Record<
+              string,
+              boolean
+            >) || {};
+          console.log("installement allAccountData", allAccountData);
+          const isInstalled = allAccountData[newSmartAccount.account.address];
+          if (!isInstalled) {
+            const hash = await newSmartAccount.installModule({
+              module: sessionsModule.moduleInitData,
+            });
+            const installOperationReceipt =
+              await newSmartAccount.waitForUserOperationReceipt({ hash });
+            console.log("install operation: ", hash, installOperationReceipt);
+            localStorage.setItem(
+              "smartSessionInstalled",
+              JSON.stringify({
+                ...allAccountData,
+                [newSmartAccount.account.address]: true,
+              })
+            );
+          }
+
+          const nexusSessionClient = newSmartAccount.extend(
+            smartSessionCreateActions(sessionsModule)
+          );
+          console.log("set smart session account", nexusSessionClient);
+
+          setSmartSessionAccount(nexusSessionClient as any); //TODO: check type again
+          break;
+        }
+        case WalletType.LEGACY_BICO: {
+          const newSmartAccount = await createSmartAccount(
+            config,
+            walletClient
+          );
+          if (!newSmartAccount) return;
+          setSmartAccountChain({
+            [connectedChain?.id]: true,
+          });
+          setSmartAccount(newSmartAccount);
+          console.log("set smart account", newSmartAccount);
+          break;
+        }
+        default:
+          throw new Error("unhandled wallet type!");
+      }
     } catch (error) {
       console.error(
         "Error fetching wallet clients or creating smart account:",
         error
       );
     }
-  }, [embeddedWallet, smartAccount]);
+  }, [embeddedWallet, smartAccount, connectedChain, smartAccountChain]);
 
   useEffect(() => {
     createAndSetSmartAccount();
-  }, [createAndSetSmartAccount]);
+  }, [createAndSetSmartAccount, connectedChain]);
 
-  return { smartAccount };
+  return { smartAccount, smartSessionAccount, refresh };
 }
 
 const getChainIdFromEmbeddedWallet = (ew: any) => {
