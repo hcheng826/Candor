@@ -7,6 +7,7 @@ import {
   mantleSepoliaTestnet,
   polygonAmoy,
   worldchain,
+  celoAlfajores,
 } from "viem/chains";
 
 export const APP_CONFIG = {
@@ -205,6 +206,34 @@ const mantleSepoliaConfig: BlockchainConfig = {
   ],
 };
 
+const celoTestnetConfig: BlockchainConfig = {
+  id: BLOCKCHAIN_NETWORK.CELO_TESTNET,
+  chainIdNum: 44787,
+  chainIdHex: "0x11807",
+  viem: celoAlfajores,
+  name: "Celo Alfajores Testnet",
+  rpcUrl: "https://alfajores-forno.celo-testnet.org",
+  explorerUrl: "https://celo-alfajores.blockscout.com",
+  walletType: WalletType.LEGACY_BICO,
+  logoUrl:
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTgQ0Bsk6AWZlHnWOhiwlnjtHhogIVprFx8ow&s",
+  nativeCurrency: {
+    name: "CELO",
+    symbol: "CELO",
+    decimals: 18,
+  },
+  tokens: [
+    {
+      address: "0x2F25deB3848C207fc8E0c34035B3Ba7fC157602B",
+      name: "USDC",
+      symbol: "USDC",
+      decimals: 6,
+      logoUrl:
+        "https://assets.coingecko.com/coins/images/6319/large/USD_Coin_icon.png?1547042389",
+    },
+  ],
+};
+
 const worldMainConfig: BlockchainConfig = {
   id: BLOCKCHAIN_NETWORK.WORLD_MAIN,
   chainIdNum: 480,
@@ -245,6 +274,7 @@ export const BLOCKCHAIN_CONFIGS = [
   baseSepoliaConfig,
   polygonAmoyConfig,
   mantleSepoliaConfig,
+  celoTestnetConfig,
   worldMainConfig,
 ];
 

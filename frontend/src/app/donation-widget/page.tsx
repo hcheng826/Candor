@@ -141,6 +141,7 @@ export default function DonationWidget() {
     //TODO: handle when donating to generic pool
     try {
       setIsLoading(true);
+      let transactionHash = "";
 
       switch (connectedChain.walletType) {
         case WalletType.NEXUS: {
@@ -233,7 +234,7 @@ export default function DonationWidget() {
                 hash: createSessionsResponse.userOpHash,
               });
             console.log("granted permission success: ", operationReceipt);
-
+            transactionHash = operationReceipt?.receipt?.transactionHash;
             const sessionData = {
               granter: (smartAccount as NexusClient)?.account?.address || "",
               sessionPublicKey,
@@ -255,7 +256,7 @@ export default function DonationWidget() {
               interval: 15_000, // 15 seconds for demo purpose (not 1 month)
             };
             console.log("sending data to backend: ", body);
-            await axios({
+            axios({
               headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",
@@ -270,6 +271,7 @@ export default function DonationWidget() {
             const hash = await client.sendTransaction({
               calls: txs,
             });
+            transactionHash = hash;
             console.log("tx hash: ", hash);
             const receipt = await client.waitForTransactionReceipt({
               hash,
@@ -289,8 +291,9 @@ export default function DonationWidget() {
           });
           const { reason } = await wait();
           console.log("reason: ", reason);
-          const { transactionHash } = await waitForTxHash();
-          console.log(transactionHash);
+          const { transactionHash: txHash } = await waitForTxHash();
+          console.log(txHash);
+          transactionHash = txHash || "";
           break;
         }
       }
@@ -310,7 +313,18 @@ export default function DonationWidget() {
       setIsLoading(false);
       toaster.create({
         title: "You have successfully donated!",
-        description: "You have successfully donated",
+        description: (
+          <div>
+            You have successfully donated.&nbsp;
+            <a
+              href={`${connectedChain.blockscoutUrl}/tx/${transactionHash}`}
+              target="_blank"
+              className="underline"
+            >
+              View on explorer
+            </a>
+          </div>
+        ),
         placement: "top-end",
         type: "success",
       });
@@ -352,6 +366,7 @@ export default function DonationWidget() {
       ),
     ];
     console.log("txs", txs);
+    let transactionHash = "";
 
     // //handle specially for Worldchain mini app
     // if (connectedChain.id === BLOCKCHAIN_NETWORK.WORLD_MAIN && isMiniApp) {
@@ -411,6 +426,7 @@ export default function DonationWidget() {
           const hash = await client.sendTransaction({
             calls: txs,
           });
+          transactionHash = hash || "";
           console.log("tx hash: ", hash);
           const receipt = await client.waitForTransactionReceipt({
             hash,
@@ -428,8 +444,9 @@ export default function DonationWidget() {
           });
           const { reason } = await wait();
           console.log("reason: ", reason);
-          const { transactionHash } = await waitForTxHash();
-          console.log(transactionHash);
+          const { transactionHash: txHash } = await waitForTxHash();
+          console.log(txHash);
+          transactionHash = txHash || "";
           break;
         }
       }
@@ -437,7 +454,18 @@ export default function DonationWidget() {
       setIsLoading(false);
       toaster.create({
         title: "You have successfully pledged!",
-        description: "You have successfully pledged to the beneficiary",
+        description: (
+          <div>
+            You have successfully pledged to the beneficiary.&nbsp;
+            <a
+              href={`${connectedChain.blockscoutUrl}/tx/${transactionHash}`}
+              target="_blank"
+              className="underline"
+            >
+              View on explorer
+            </a>
+          </div>
+        ),
         placement: "top-end",
         type: "success",
       });
