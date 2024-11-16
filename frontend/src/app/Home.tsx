@@ -93,6 +93,7 @@ const StyledSubtitle = styled.h2`
   color: white;
   margin-top: 8px;
   margin: 0 16px;
+  max-width: 600px;
 
   @media (max-width: 768px) {
     font-size: 24px;
@@ -151,7 +152,7 @@ export const Home = () => {
               left: "-72%",
             }}
           />
-          <div className="absolute -top-[10%] -left-[61%]">
+          <div className="absolute -top-[11%] -left-[61%]">
             <TypeAnimation
               sequence={[
                 `Welcome donors, we are candor who has purpose to uplift communities, spread hope, and create lasting change. Let your generosity shine and transform lives—one contribution at a time!`,
