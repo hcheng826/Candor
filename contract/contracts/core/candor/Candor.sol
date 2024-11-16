@@ -1,27 +1,27 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.20;
 
-import {CandorController} from "./CandorController.sol";
-import {OneInchSwapHelper} from "../1Inch/OneInchSwapHelper.sol";
-import {ClrFundHelper} from "../clr-fund/ClrFundHelper.sol";
-import {BoringOwnable} from "../helpers/BoringOwnable.sol";
+import { CandorController } from "./CandorController.sol";
+import { OneInchSwapHelper } from "../1Inch/OneInchSwapHelper.sol";
+import { ClrFundHelper } from "../clr-fund/ClrFundHelper.sol";
+import { BoringOwnable } from "../helpers/BoringOwnable.sol";
 
 // Interfaces
-import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
-import {ISP} from "@ethsign/sign-protocol-evm/src/interfaces/ISP.sol";
-import {ISPHook} from "@ethsign/sign-protocol-evm/src/interfaces/ISPHook.sol";
-import {ISPHookCandor} from "../../interfaces/ISPHookCandor.sol";
+import { IERC20 } from "@openzeppelin/contracts/interfaces/IERC20.sol";
+import { ISP } from "@ethsign/sign-protocol-evm/src/interfaces/ISP.sol";
+import { ISPHook } from "@ethsign/sign-protocol-evm/src/interfaces/ISPHook.sol";
+import { ISPHookCandor } from "../../interfaces/ISPHookCandor.sol";
 
 // Models
-import {Contribution} from "./models/Contribution.sol";
-import {Attestation} from "@ethsign/sign-protocol-evm/src/models/Attestation.sol";
-import {DataLocation} from "@ethsign/sign-protocol-evm/src/models/DataLocation.sol";
-import {Schema} from "@ethsign/sign-protocol-evm/src/models/Schema.sol";
+import { Contribution } from "./models/Contribution.sol";
+import { Attestation } from "@ethsign/sign-protocol-evm/src/models/Attestation.sol";
+import { DataLocation } from "@ethsign/sign-protocol-evm/src/models/DataLocation.sol";
+import { Schema } from "@ethsign/sign-protocol-evm/src/models/Schema.sol";
 
 // Libraries
-import {TimeLib} from "../libraries/TimeLib.sol";
-import {BytesHelperLib} from "../libraries/BytesHelperLib.sol";
-import {StringHelperLib} from "../libraries/StringHelperLib.sol";
+import { TimeLib } from "../libraries/TimeLib.sol";
+import { BytesHelperLib } from "../libraries/BytesHelperLib.sol";
+import { StringHelperLib } from "../libraries/StringHelperLib.sol";
 
 error ConfirmationAddressMismatch();
 error BeneficiaryNotPledged(address contributor, uint256 beneficiaryId);
@@ -39,25 +39,14 @@ contract Candor is CandorController, BoringOwnable, OneInchSwapHelper {
     uint64 public pledgeSchemaId;
 
     // Events
-    event Initialised(
-        address owner,
-        address spInstance,
-        address spHook,
-        address baseCurrency
-    );
+    event Initialised(address owner, address spInstance, address spHook, address baseCurrency);
 
     /// @notice Modifier to ensure a contribution exists for the specified contributor and beneficiary in the current epoch.
-    modifier onlyPledgedContribution(
-        address contributor,
-        uint256 beneficiaryId
-    ) {
+    modifier onlyPledgedContribution(address contributor, uint256 beneficiaryId) {
         uint256 curEpoch = _getEpochIndex(block.timestamp);
-        uint64 pledgeId = _donorContributionRegistry[contributor][curEpoch][
-            beneficiaryId
-        ].pledgeAttestationId;
+        uint64 pledgeId = _donorContributionRegistry[contributor][curEpoch][beneficiaryId].pledgeAttestationId;
 
-        if (pledgeId == 0)
-            revert BeneficiaryNotPledged(contributor, beneficiaryId);
+        if (pledgeId == 0) revert BeneficiaryNotPledged(contributor, beneficiaryId);
         _;
     }
     /// @notice Initializes the contract with necessary parameters.
@@ -72,11 +61,7 @@ contract Candor is CandorController, BoringOwnable, OneInchSwapHelper {
         address _spHook,
         address _baseCurrency,
         address _aggregatorRouterV6
-    )
-        BoringOwnable(_msgSender())
-        CandorController(_baseCurrency)
-        OneInchSwapHelper(_aggregatorRouterV6)
-    {
+    ) BoringOwnable(_msgSender()) CandorController(_baseCurrency) OneInchSwapHelper(_aggregatorRouterV6) {
         spInstance = ISP(_spInstance);
         pledgeSchemaId = _schemaId;
         spHookInstance = ISPHookCandor(_spHook); // point system
@@ -106,11 +91,7 @@ contract Candor is CandorController, BoringOwnable, OneInchSwapHelper {
     /// @param beneficiaryId The beneficiary's ID.
     /// @param amount The donation amount in base currency.
     /// @param data Additional data for the donation.
-    function donateByBaseCurrency(
-        uint256 beneficiaryId,
-        uint256 amount,
-        bytes calldata data
-    ) external {
+    function donateByBaseCurrency(uint256 beneficiaryId, uint256 amount, bytes calldata data) external {
         // Call the internal function to settle the payment using base currency
         _settleDonationTransfer(beneficiaryId, amount, BASE_CURRENCY, data);
     }
@@ -190,10 +171,7 @@ contract Candor is CandorController, BoringOwnable, OneInchSwapHelper {
     /// @notice Internal function to settle a donation using the base currency.
     /// @param beneficiaryId The beneficiary's ID.
     /// @param amount The donation amount.
-    function _settleDonationTransferByBaseCurrency(
-        uint256 beneficiaryId,
-        uint256 amount
-    ) internal {
+    function _settleDonationTransferByBaseCurrency(uint256 beneficiaryId, uint256 amount) internal {
         _transferIn(BASE_CURRENCY, msg.sender, amount);
         // Update Beneficiary collected donation
         _updateDonation(beneficiaryId, amount, msg.sender);
@@ -210,11 +188,7 @@ contract Candor is CandorController, BoringOwnable, OneInchSwapHelper {
         uint256 beneficiaryId,
         bytes calldata pledge,
         bytes calldata encodedProof
-    )
-        internal
-        onlyValidBeneficiary(beneficiaryId)
-        returns (uint64 attestationId)
-    {
+    ) internal onlyValidBeneficiary(beneficiaryId) returns (uint64 attestationId) {
         address contributor = msg.sender;
         address beneficiary = beneficiaryRegistry[beneficiaryId];
 
@@ -248,20 +222,10 @@ contract Candor is CandorController, BoringOwnable, OneInchSwapHelper {
         );
 
         // // Attest to sign protocol
-        attestationId = spInstance.attest(
-            pledgeAttestation,
-            "",
-            emptyData,
-            packedEncodedProof
-        ); // extraData for hook callback
+        attestationId = spInstance.attest(pledgeAttestation, "", emptyData, packedEncodedProof); // extraData for hook callback
         // // Save the pledge attestation Id & emit event
         uint256 contributionAmount = spHookInstance.balanceOf(contributor);
-        _contributeSocialPledge(
-            beneficiaryId,
-            attestationId,
-            contributor,
-            contributionAmount
-        );
+        _contributeSocialPledge(beneficiaryId, attestationId, contributor, contributionAmount);
     }
 
     /// @notice Internal function to revoke a pledge attestation.
@@ -272,29 +236,16 @@ contract Candor is CandorController, BoringOwnable, OneInchSwapHelper {
         address contributor
     ) internal onlyPledgedContribution(contributor, beneficiaryId) {
         uint256 curEpoch = _getEpochIndex(block.timestamp);
-        uint64 attestationIdToRevoke = _donorContributionRegistry[contributor][
-            curEpoch
-        ][beneficiaryId].pledgeAttestationId;
+        uint64 attestationIdToRevoke = _donorContributionRegistry[contributor][curEpoch][beneficiaryId]
+            .pledgeAttestationId;
 
-        uint256 revokeAmount = spHookInstance.getScoreWeightFromPledgeId(
-            attestationIdToRevoke
-        );
-        _revokeSocialPledge(
-            beneficiaryId,
-            attestationIdToRevoke,
-            contributor,
-            revokeAmount
-        );
+        uint256 revokeAmount = spHookInstance.getScoreWeightFromPledgeId(attestationIdToRevoke);
+        _revokeSocialPledge(beneficiaryId, attestationIdToRevoke, contributor, revokeAmount);
 
         bytes memory emptyData = new bytes(0);
         bytes memory encodedContributor = abi.encode(contributor);
 
-        spInstance.revoke(
-            attestationIdToRevoke,
-            "",
-            emptyData,
-            encodedContributor
-        );
+        spInstance.revoke(attestationIdToRevoke, "", emptyData, encodedContributor);
     }
 
     /// @notice Returns the current epoch index based on the current timestamp.
@@ -317,9 +268,7 @@ contract Candor is CandorController, BoringOwnable, OneInchSwapHelper {
     /// @notice Retrieves the total donations made to a specific beneficiary during the current epoch.
     /// @param beneficiaryId The ID of the beneficiary.
     /// @return amount The total donation amount for the beneficiary in the current epoch.
-    function getBeneficiaryDonationsCurrentEpoch(
-        uint256 beneficiaryId
-    ) external view returns (uint256 amount) {
+    function getBeneficiaryDonationsCurrentEpoch(uint256 beneficiaryId) external view returns (uint256 amount) {
         uint256 curEpoch = _getEpochIndex(block.timestamp);
         amount = _beneficiaryDonation[beneficiaryId][curEpoch];
     }
@@ -327,19 +276,13 @@ contract Candor is CandorController, BoringOwnable, OneInchSwapHelper {
     /// @notice Retrieves the total generic donations made during a specific epoch.
     /// @param epochIndex The index of the epoch.
     /// @return amount The total generic donation amount for the specified epoch.
-    function getGenericDonationsByEpoch(
-        uint256 epochIndex
-    ) external view returns (uint256 amount) {
+    function getGenericDonationsByEpoch(uint256 epochIndex) external view returns (uint256 amount) {
         amount = _genericDonation[epochIndex];
     }
 
     /// @notice Retrieves the total generic donations made during the current epoch.
     /// @return amount The total generic donation amount for the current epoch.
-    function getGenericDonationCurrentEpoch()
-        external
-        view
-        returns (uint256 amount)
-    {
+    function getGenericDonationCurrentEpoch() external view returns (uint256 amount) {
         uint256 curEpoch = _getEpochIndex(block.timestamp);
         amount = _genericDonation[curEpoch];
     }
@@ -348,19 +291,14 @@ contract Candor is CandorController, BoringOwnable, OneInchSwapHelper {
     /// @param epochIndex The index of the epoch.
     /// @param donor The address of the donor.
     /// @return amount The total donation amount by the donor for the specified epoch.
-    function getDonorGenericDonationByEpoch(
-        uint256 epochIndex,
-        address donor
-    ) external view returns (uint256 amount) {
+    function getDonorGenericDonationByEpoch(uint256 epochIndex, address donor) external view returns (uint256 amount) {
         amount = _donorGenericDonationRegistry[donor][epochIndex];
     }
 
     /// @notice Retrieves the donation amount made by a specific donor during the current epoch.
     /// @param donor The address of the donor.
     /// @return amount The total donation amount by the donor for the current epoch.
-    function getDonorGenericDonationCurrentEpoch(
-        address donor
-    ) external view returns (uint256 amount) {
+    function getDonorGenericDonationCurrentEpoch(address donor) external view returns (uint256 amount) {
         uint256 curEpoch = _getEpochIndex(block.timestamp);
         amount = _donorGenericDonationRegistry[donor][curEpoch];
     }
@@ -376,9 +314,7 @@ contract Candor is CandorController, BoringOwnable, OneInchSwapHelper {
         uint256 beneficiaryId,
         address donor
     ) external view returns (uint256 amount, uint64 pledgeId) {
-        Contribution memory contribution = _donorContributionRegistry[donor][
-            epochIndex
-        ][beneficiaryId];
+        Contribution memory contribution = _donorContributionRegistry[donor][epochIndex][beneficiaryId];
         amount = contribution.amount;
         pledgeId = contribution.pledgeAttestationId;
     }
@@ -394,20 +330,14 @@ contract Candor is CandorController, BoringOwnable, OneInchSwapHelper {
     ) external view returns (uint256 amount, uint64 pledgeId) {
         uint256 curEpoch = _getEpochIndex(block.timestamp);
 
-        Contribution memory contribution = _donorContributionRegistry[donor][
-            curEpoch
-        ][beneficiaryId];
+        Contribution memory contribution = _donorContributionRegistry[donor][curEpoch][beneficiaryId];
         amount = contribution.amount;
         pledgeId = contribution.pledgeAttestationId;
     }
 
     /// @notice Retrieves the pledge schema information.
     /// @return pledgeSchema The schema details for pledge attestations.
-    function getPledgeSchema()
-        external
-        view
-        returns (Schema memory pledgeSchema)
-    {
+    function getPledgeSchema() external view returns (Schema memory pledgeSchema) {
         pledgeSchema = spInstance.getSchema(pledgeSchemaId);
     }
 
@@ -421,26 +351,17 @@ contract Candor is CandorController, BoringOwnable, OneInchSwapHelper {
         uint256 epochIndex,
         uint256 beneficiaryId
     ) external view returns (Attestation memory pledgeAttestation) {
-        Contribution memory contribution = _donorContributionRegistry[
-            contributor
-        ][epochIndex][beneficiaryId];
-        pledgeAttestation = spInstance.getAttestation(
-            contribution.pledgeAttestationId
-        );
+        Contribution memory contribution = _donorContributionRegistry[contributor][epochIndex][beneficiaryId];
+        pledgeAttestation = spInstance.getAttestation(contribution.pledgeAttestationId);
     }
 
     /// @notice Checks if a beneficiary has been pledged to by a specific contributor in the current epoch.
     /// @param beneficiaryId The ID of the beneficiary.
     /// @param contributor The address of the contributor.
     /// @return pledged True if the beneficiary has a pledge attestation, otherwise false.
-    function isBeneficiaryPledged(
-        uint256 beneficiaryId,
-        address contributor
-    ) external view returns (bool pledged) {
+    function isBeneficiaryPledged(uint256 beneficiaryId, address contributor) external view returns (bool pledged) {
         uint256 curEpoch = _getEpochIndex(block.timestamp);
-        uint64 pledgeId = _donorContributionRegistry[contributor][curEpoch][
-            beneficiaryId
-        ].pledgeAttestationId;
+        uint64 pledgeId = _donorContributionRegistry[contributor][curEpoch][beneficiaryId].pledgeAttestationId;
         pledged = pledgeId != 0 ? true : false;
     }
 }

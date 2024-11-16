@@ -178,7 +178,8 @@ const config: HardhatUserConfig = {
       timeout: 200000,
     },
     arbSepolia: {
-      url: `https://arbitrum-sepolia.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
+      // url: `https://arbitrum-sepolia.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
+      url: `https://arbitrum-sepolia.blockpi.network/v1/rpc/public `,
       // accounts: [`${process.env.PRIVATE_KEY_727 || dummyPrivateKey}`],
       accounts: [
         `${process.env.PRIVATE_KEY_727 || dummyPrivateKey}`,

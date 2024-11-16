@@ -27,6 +27,7 @@ contract CcipDonateHandler is CCIPReceiver {
         uint64 dstChainSelector,
         address dstChainReceiver
     ) public {
+        IERC20(token).transferFrom(msg.sender, address(this), amount);
         // bridge to dst chain via ccip router
         IERC20(token).approve(i_ccipRouter, amount);
         Client.EVMTokenAmount[] memory tokenAmount = new Client.EVMTokenAmount[](1);
@@ -52,4 +53,6 @@ contract CcipDonateHandler is CCIPReceiver {
         ICandor(candor).donateByBaseCurrency(beneficiaryId, amount, "");
         emit MessageReceived(message.messageId);
     }
+
+    receive() external payable {}
 }
