@@ -143,6 +143,11 @@ const config: HardhatUserConfig = {
       accounts: [`${process.env.PRIVATE_KEY_727 || dummyPrivateKey}`],
       timeout: 200000,
     },
+    'mantle-sepolia': {
+      url: 'https://rpc.sepolia.mantle.xyz',
+      accounts: [`${process.env.PRIVATE_KEY_727 || dummyPrivateKey}`, `${process.env.ALT_PRIVATE_KEY || dummyPrivateKey}`],
+      timeout: 200000,
+    },
     bsc: {
       url: `https://bsc-dataseed.binance.org/`,
       accounts: [`${process.env.PRIVATE_KEY_BSC || dummyPrivateKey}`],
@@ -229,8 +234,17 @@ const config: HardhatUserConfig = {
       polygon: process.env.POLYGONSCAN_API_KEY || '',
       chiado: process.env.GNOSISSCAN_API_KEY || '',
       gnosis: process.env.GNOSISSCAN_API_KEY || '',
+      'mantle-sepolia': '88HPGWE42Q2YPTFT32VFS6XA9SQEHFG1E1',
     },
     customChains: [
+      {
+        network: 'mantle-sepolia',
+        chainId: 5003,
+        urls: {
+          apiURL: 'https://api-sepolia.mantlescan.xyz/api',
+          browserURL: 'https://sepolia.mantlescan.xyz/',
+        },
+      },
       {
         network: 'base-goerli',
         chainId: 84531,

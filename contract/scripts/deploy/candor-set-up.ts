@@ -17,6 +17,9 @@ import {
   WORLD_ID_POLYGON_AMOY,
   USDC_POLYGON_AMOY,
   SIGN_PROTOCOL_POLYGON_AMOY,
+  SIGN_PROTOCOL_MANTLE_SEPOLIA,
+  WORLD_ID_MANTLE_SEPOLIA,
+  USDC_MANTEL_SEPOLIA,
 } from '../utils/candor';
 import { MOCK_NULLIFIER_HASH, MOCK_PROOF, MOCK_ROOT, MOCK_SIGNAL } from '../utils/const';
 
@@ -28,6 +31,7 @@ enum CandorChains {
   ARB_SEPOLIA = 'ARB_SEPOLIA',
   BASE_SEPOLIA = 'BASE_SEPOLIA',
   POLYGON_AMOY = 'POLYGON_AMOY',
+  MANTLE_SEPOLIA = 'MANTLE_SEPOLIA',
 }
 function getAddressLogs(chain: CandorChains = CandorChains.SEPOLIA) {
   let WORLD_ID_ADDRESS = '';
@@ -47,6 +51,10 @@ function getAddressLogs(chain: CandorChains = CandorChains.SEPOLIA) {
     WORLD_ID_ADDRESS = WORLD_ID_POLYGON_AMOY;
     USDC = USDC_POLYGON_AMOY;
     SIGN_PROTOCOL_INSTANCE = SIGN_PROTOCOL_POLYGON_AMOY;
+  } else if (chain === CandorChains.MANTLE_SEPOLIA) {
+    WORLD_ID_ADDRESS = WORLD_ID_MANTLE_SEPOLIA;
+    USDC = USDC_MANTEL_SEPOLIA;
+    SIGN_PROTOCOL_INSTANCE = SIGN_PROTOCOL_MANTLE_SEPOLIA;
   }
   else {
     WORLD_ID_ADDRESS = WORLD_ID_BASE_SEPOLIA;
@@ -69,7 +77,7 @@ async function main() {
     `[ADDRESSES USED]: Deployer - ${await deployer.getAddress()}; AltAccount - ${await altAccount.getAddress()}`,
   );
   const { worldIdAddress, spHookConstructor, usdcAddress, spInstanceAddress, oneInchAggregatorV6Address } =
-    getAddressLogs(CandorChains.POLYGON_AMOY); // Change to chain
+    getAddressLogs(CandorChains.MANTLE_SEPOLIA); // Change to chain
 
   // Step 1: Deploy CandorSPHook to prepare for schema creation on Sign Protocol's SP Instance
   const candorSpHook = await deploy<CandorSPHook>(deployer, 'CandorSPHook', spHookConstructor, true); // switch to true for verification

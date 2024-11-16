@@ -22,20 +22,21 @@ contract CcipDonateHandler is CCIPReceiver {
 
     function doanteToOtherChain(
         uint256 beneficiaryId,
-        address token, // only support BASE_CURRENCT USDC
+        address srcToken, // only support BASE_CURRENCT USDC
+        address dstToken,
         uint256 amount,
         uint64 dstChainSelector,
         address dstChainReceiver
     ) public {
-        IERC20(token).transferFrom(msg.sender, address(this), amount);
+        IERC20(srcToken).transferFrom(msg.sender, address(this), amount);
         // bridge to dst chain via ccip router
-        IERC20(token).approve(i_ccipRouter, amount);
+        IERC20(srcToken).approve(i_ccipRouter, amount);
         Client.EVMTokenAmount[] memory tokenAmount = new Client.EVMTokenAmount[](1);
-        tokenAmount[0] = Client.EVMTokenAmount({ token: token, amount: amount });
+        tokenAmount[0] = Client.EVMTokenAmount({ token: srcToken, amount: amount });
 
         Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
             receiver: abi.encode(dstChainReceiver),
-            data: abi.encode(beneficiaryId, amount),
+            data: abi.encode(beneficiaryId, amount, dstToken),
             tokenAmounts: tokenAmount,
             extraArgs: "",
             feeToken: address(0)
@@ -49,7 +50,11 @@ contract CcipDonateHandler is CCIPReceiver {
     }
 
     function _ccipReceive(Client.Any2EVMMessage memory message) internal override {
-        (uint256 beneficiaryId, uint256 amount) = abi.decode(message.data, (uint256, uint256));
+        (uint256 beneficiaryId, uint256 amount, address dstToken) = abi.decode(
+            message.data,
+            (uint256, uint256, address)
+        );
+        IERC20(dstToken).approve(candor, amount);
         ICandor(candor).donateByBaseCurrency(beneficiaryId, amount, "");
         emit MessageReceived(message.messageId);
     }

@@ -4,6 +4,7 @@ import hre from 'hardhat';
 import { deploy } from '../utils/helpers';
 // ABI
 import { WorldID } from '../../typechain-types';
+import { MockToken } from '../../typechain-types';
 
 async function main() {
   const [deployer] = await hre.ethers.getSigners();
@@ -11,6 +12,8 @@ async function main() {
   const mockWorldId = await deploy<WorldID>(deployer, 'WorldID', [], true);
   console.log('Mock WorldID Contract Deployed!');
 
+  // const mockToken = await deploy<MockToken>(deployer, 'MockToken', [], true);
+  // console.log('Mock Token Contract Deployed!');
   /*
   [SEPOLIA TESTNET]
   WorldID: 0xe6E854b5F1a474863791E537542A0546766f61c7
