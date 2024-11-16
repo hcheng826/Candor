@@ -91,6 +91,15 @@ const config: HardhatUserConfig = {
       gas: 80000000,
       loggingEnabled: false,
     },
+    'celo-alf': {
+      url: 'https://alfajores-forno.celo-testnet.org',
+      accounts: [
+        `${process.env.PRIVATE_KEY_727 || dummyPrivateKey}`,
+        `${process.env.ALT_PRIVATE_KEY || dummyPrivateKey}`,
+      ],
+      gasPrice: 30 * 1000000000,
+      timeout: 200000,
+    },
     blast: {
       url: `https://rpc.blast.io`,
       accounts: [
