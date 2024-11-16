@@ -52,7 +52,7 @@ const ChainDropdown = () => {
 
   useEffect(() => {
     if (isMiniApp && finalChain) {
-      setChain(finalChain.chainIdNum);
+      setChain(BLOCKCHAIN_CONFIGS[0].chainIdNum); //set default
     }
   }, [isMiniApp]);
 
