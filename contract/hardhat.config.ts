@@ -133,6 +133,15 @@ const config: HardhatUserConfig = {
       gasPrice: 30 * 1000000000,
       timeout: 200000,
     },
+    'worldchain': {
+      url: 'https://worldchain-mainnet.g.alchemy.com/public',
+      accounts: [
+        `${process.env.PRIVATE_KEY_727 || dummyPrivateKey}`,
+        `${process.env.ALT_PRIVATE_KEY || dummyPrivateKey}`,
+      ],
+      gasPrice: 30 * 1000000000,
+      timeout: 200000,
+    },
     'polygon-amoy': {
       url: 'https://rpc-amoy.polygon.technology',
       accounts: [
@@ -244,8 +253,17 @@ const config: HardhatUserConfig = {
       chiado: process.env.GNOSISSCAN_API_KEY || '',
       gnosis: process.env.GNOSISSCAN_API_KEY || '',
       'mantle-sepolia': '88HPGWE42Q2YPTFT32VFS6XA9SQEHFG1E1',
+      'worldchain': 'BGJS5MKC11GX6U84R4M5ERQCE5XUHCK6ES',
     },
     customChains: [
+      {
+        network: 'worldchain',
+        chainId: 480,
+        urls: {
+          apiURL: 'https://api.worldscan.org/api',
+          browserURL: 'https://worldscan.org/',
+        },
+      },
       {
         network: 'mantle-sepolia',
         chainId: 5003,

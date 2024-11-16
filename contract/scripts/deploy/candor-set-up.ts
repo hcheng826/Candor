@@ -33,6 +33,7 @@ enum CandorChains {
   POLYGON_AMOY = 'POLYGON_AMOY',
   MANTLE_SEPOLIA = 'MANTLE_SEPOLIA',
   CELO_ALF = 'CELO_ALF',
+  WORLDCHAIN = 'WORLDCHAIN',
 }
 function getAddressLogs(chain: CandorChains = CandorChains.SEPOLIA) {
   let WORLD_ID_ADDRESS = '';
@@ -59,6 +60,10 @@ function getAddressLogs(chain: CandorChains = CandorChains.SEPOLIA) {
   } else if (chain === CandorChains.CELO_ALF) {
     WORLD_ID_ADDRESS = '0xba7177535B4d9A74e7928376e8ecd9db8F689d12'; // random address
     USDC = '0xba7177535B4d9A74e7928376e8ecd9db8F689d12'; // random address
+    SIGN_PROTOCOL_INSTANCE = '0xba7177535B4d9A74e7928376e8ecd9db8F689d12'; // random address
+  } else if (chain === CandorChains.WORLDCHAIN) {
+    WORLD_ID_ADDRESS = '0xba7177535B4d9A74e7928376e8ecd9db8F689d12'; // random address
+    USDC = '0x79A02482A880bCE3F13e09Da970dC34db4CD24d1';
     SIGN_PROTOCOL_INSTANCE = '0xba7177535B4d9A74e7928376e8ecd9db8F689d12'; // random address
   }
   else {

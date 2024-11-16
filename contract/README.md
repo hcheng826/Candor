@@ -36,6 +36,7 @@ npx hardhat ignition deploy ./ignition/modules/Lock.ts
 
 CCIP tx
 https://ccip.chain.link/#/side-drawer/msg/0xa5620290fa9208c0ce21828a8d6e650ec3e463ba6011b75a414a04f2bb0ea125
+https://ccip.chain.link/#/side-drawer/msg/0xb9e273cb80c6faf475033b592523fa2acc565fb2f04f6d0f07c8b9e5a43be8aa
 
 
 ### Mantle Sepolia
@@ -46,6 +47,9 @@ https://ccip.chain.link/#/side-drawer/msg/0xa5620290fa9208c0ce21828a8d6e650ec3e4
 ### Celo Alf
 - CandoSPHook: 0x0Ce9551aC3DF1666d4F569FB88A80003DC43E7c7
 - Candor: 0x2FC978bDba0ae5f40E1adF6A924060dEed726E7c
+
+### Worldchain
+- Candor: [0x2FC978bDba0ae5f40E1adF6A924060dEed726E7c](https://worldscan.org/address/0x2FC978bDba0ae5f40E1adF6A924060dEed726E7c)
 
 ### Subgraph data
 ```
