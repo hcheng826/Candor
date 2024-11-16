@@ -11,8 +11,8 @@ import {
 } from "recharts";
 
 const data = [
-  { name: "You", value: 10, color: "#F32871" },
-  { name: "Others", value: 90, color: "#ababab" },
+  { name: "You", value: 90, color: "#F32871" },
+  { name: "Others", value: 10, color: "#ababab" },
   //   { name: "Group E", value: 278 },
   //   { name: "Group F", value: 189 },
 ];
@@ -33,7 +33,7 @@ export default function AllocatedFundChart() {
             data={data}
             outerRadius={48}
             fill="#F32871"
-            label={(data) => (data.payload.value) + '%'}
+            label={(data) => data.payload.value + "%"}
           >
             <LabelList
               dataKey="name"

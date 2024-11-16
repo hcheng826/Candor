@@ -1,6 +1,7 @@
 import { fetchEpochSeconds } from "@/contracts/interact/candor";
 import {
   getAllBeneficiaries,
+  getBeneficiary,
   getBeneficiaryByAddress,
 } from "@/graphql/beneficiary";
 import { getContributonsByBeneficiaryId } from "@/graphql/contributor";
@@ -120,10 +121,15 @@ export const useGetBeneficiaryMetrics = (address: string) => {
     queryKey: ["beneficiary-metrics", address],
     queryFn: async () => {
       try {
-        const [res, epoch] = await Promise.all([
+        const [genericPool, res, epoch] = await Promise.all([
+          getBeneficiary("BENEFICIARY-0"),
           getBeneficiaryByAddress(address),
           fetchEpochSeconds(),
         ]);
+
+        const genericPoolDirectAmount =
+          toEther(genericPool?.directDonationReceived ?? "0", USDC_DECIMALS) ||
+          0;
 
         return {
           totalDonations: 100, //in base currency
@@ -139,10 +145,9 @@ export const useGetBeneficiaryMetrics = (address: string) => {
             totalDonators: 100,
             allocation: 0.2, //FIXME:
             allocatedAmount: 200, //in base currency
-            allocatedAmountUSD: toEther(
-              res?.clrMatchDonationReceived ?? "0",
-              USDC_DECIMALS
-            ), //in USD
+            allocatedAmountUSD:
+              toEther(res?.clrMatchDonationReceived ?? "0", USDC_DECIMALS) ||
+              0.9 * genericPoolDirectAmount, //in USD
           },
         };
       } catch (err) {

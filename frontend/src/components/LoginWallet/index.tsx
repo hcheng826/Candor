@@ -62,7 +62,7 @@ export const LoginWallet = ({
     <Container className="w-full max-w-[512px] bg-white">
       <div className="text-2xl font-bold text-center mb-6">{title}</div>
 
-      <div>Miniapp address: {miniAppAddress || "-"}</div>
+      {/* <div>Miniapp address: {miniAppAddress || "-"}</div> */}
       {isMiniApp && !miniAppAddress && (
         <PrimaryButton onClick={signInWithWorldIdWallet} className="w-full">
           Connect with WorldID

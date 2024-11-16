@@ -73,6 +73,7 @@ export const getBeneficiary = async (id: string) => {
 
   const { beneficiary: b } = res;
   return {
+    ...b,
     gqlId: b.id,
     id: b.beneficiaryId,
     address: b.user.id,
