@@ -42,7 +42,6 @@ https://ccip.chain.link/#/side-drawer/msg/0xb9e273cb80c6faf475033b592523fa2acc56
 ### Mantle Sepolia
 - CandoSPHook:  [0xBc32D940b02F4376D73CA908907C953711B05e39](https://sepolia.mantlescan.xyz/address/0xBc32D940b02F4376D73CA908907C953711B05e39#code)
 - Candor: [0xab1F16edCde814F60f3F9eb227a6cF37EfA988f1](https://sepolia.mantlescan.xyz/address/0xab1F16edCde814F60f3F9eb227a6cF37EfA988f1#code)
-  - deployed with schemaId 100, spInstanceAddr 0xA337666761405B2092E7B6Fa7e2599947a943751
 
 ### Celo Alf
 - CandoSPHook: 0x0Ce9551aC3DF1666d4F569FB88A80003DC43E7c7
