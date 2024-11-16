@@ -24,11 +24,11 @@ npx hardhat ignition deploy ./ignition/modules/Lock.ts
 - CcipDonateHandler: [0xcb1Eb668Ca9536E38ae02a0f0A8b72e1F683c4a8](https://base-sepolia.blockscout.com/address/0xcb1Eb668Ca9536E38ae02a0f0A8b72e1F683c4a8#code)
 
 ### POLYGON AMOY
-- CandoSPHook:  0xD0D44b86b87b7003058f2bd985078DCFa514D795
-- Candor: 0x356a2439f30DD23aE37E34D509c9f5f5edc39a23
-- SchemaId: 154 (0x9A)
-- FULL Schema ID: onchain_evm_80002_0x9A
-- Sign Protocol Explorer Link: https://testnet-scan.sign.global/schema/onchain_evm_80002_0x9a
+- CandoSPHook:  [0x91Fdc87cBED8Be6FBfDe8fF0cFE6d9B945b008E4](https://amoy.polygonscan.com/address/0x91Fdc87cBED8Be6FBfDe8fF0cFE6d9B945b008E4#code)
+- Candor: [0xc570829fa7e4b2088cf2A3544Fba9267B3a6160E](https://amoy.polygonscan.com/address/0xc570829fa7e4b2088cf2A3544Fba9267B3a6160E#code)
+- SchemaId: 155 (0x9B)
+- FULL Schema ID: onchain_evm_80002_0x9B
+- Sign Protocol Explorer Link: https://testnet-scan.sign.global/schema/onchain_evm_80002_0x9b
 - CcipDonateHandler: [0x6BB6B319Ad77a78f932a1911b7F87Be26C345f0a](https://amoy.polygonscan.com/address/0x6BB6B319Ad77a78f932a1911b7F87Be26C345f0a#code)
 
 ### ARB SEPOLIA
