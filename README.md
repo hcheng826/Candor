@@ -2,10 +2,12 @@
 
 A transformative charitable gateway enabling seamless cross-token donations, verifiable social pledge attestations designed for socially fairer fund distributions.
 
-## Motivation/Problem
-<place_holder>
+## Motivation
+Systemic inequality and limited access hinder equitable public fund distribution, while current 'fair distribution' methods fall short in ensuring true equity in fund matching.
 
-## Demo Link: <place_holder>
+## Demo:
+App: https://candor-three.vercel.app/
+Demo video: https://www.youtube.com/watch?v=U9G5etOK6_U
 
 ## System
 
@@ -19,7 +21,7 @@ By integrating Sign Protocol, Candor leverages its social pledge schema and cust
 Bounty prizes
 
 ### Backend
-<place_holder>
+The backend acts as a minimally-trusted off-chain solver that uses Vercel serverless functions for automating recurring donations. Instead of a traditional database, Biconomy smart session data is securely encrypted and persistently stored using Nillion’s infrastructure - containing data such as grant permissions, donation amounts and scheduling details. A serverless cron job runs every fixed interval, processing pending donations and triggering donations on behalf of the user via Biconomy’s smart session. The serverless nature is chosen as it improves the reliability by being available to be run anywhere around the world.
 
 ### Frontend
 
@@ -46,9 +48,7 @@ World ID mini app kit also allows to create seamless native-like applications th
 
 - The Graph - Thanks to The Graph Protocol, Candor has near-instantaneous access to blockchain data through a developer-friendly API. With real-time listening capability, Candor can track firstly all its cash flow activities (from its main contract), secondly the respective on-chain review attestations from Sign Protocol & thirdly its human hood verification tracking & attestation social score system in an efficient manner without the need for complex infrastructure set-up. With the help of abstracting complex data structures, this not only services for simplifying blockchain data analytics but also ensures that scalability requirements can be effectively met as the amount of data generated increases exponentially.
 
-- Biconomy - With Biconomy's SDK, Candor transforms the user experience by integrating smart sessions and gasless transactions, making charitable giving seamless and accessible. Users can enjoy one-click donation flows with transaction bundling, removing complexities like gas management and ensuring smooth on-chain interactions.
-Biconomy's advanced relayer infrastructure also enables efficient session management and secure self-custody, enhancing both convenience and control. By leveraging these features, Candor significantly lowers barriers for new users, creating a Web3 experience that feels as intuitive as Web2.
-This integration highlights Biconomy’s potential to simplify blockchain interactions while driving real-world impact, aligning perfectly with Candor’s mission to make philanthropy effortless and transparent.
+- Biconomy - Candor revolutionizes charitable giving by leveraging Biconomy’s latest ERC-7579 compatible Nexus Smart Accounts. Users enjoy smooth one-click donation flows with transaction bundling and gasless transactions, removing complexities like gas management. Smart sessions enables innovative recurring donations without any request of repeated signatures, allowing users to schedule contributions that can only execute under a set of rules and policies. Biconomy's advanced relayer infrastructure also enables efficient session management and secure self-custody, enhancing both convenience and control. By leveraging these features, Candor significantly lowers barriers for new users, creating a Web3 experience that feels as intuitive as Web2 - one-click donations, batch processing, seamless gasless on-ramps and even periodic donations.
 
 - NounsDAO - As a public good aligned with its mission to democratize access and uplift grassroots initiatives, Candor's focus on charitable endeavors seamlessly integrates with Nouns' ethos as a community-owned brand. The synergy is reflected in the UI/UX, where Nouns art, avatars, and animations create an engaging, giving-centric theme that perfectly complements Candor’s vision of a world of giving and fairness.
 
