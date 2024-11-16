@@ -2,19 +2,23 @@ const express = require("express");
 const cors = require("cors");
 const {
   createNexusSessionClient,
-  getChain,
   smartSessionUseActions,
   toSmartSessionsValidator,
   createBicoPaymasterClient,
 } = require("@biconomy/sdk");
 const { http, encodeFunctionData } = require("viem");
-const { privateKeyToAccount } = require("viem/accounts");
+const { privateKeyToAccount, generatePrivateKey } = require("viem/accounts");
 const {
   baseSepolia,
   polygonAmoy,
   mantleSepoliaTestnet,
   worldchain,
 } = require("viem/chains");
+const { SmartSessionMode } = require("@rhinestone/module-sdk");
+const { config } = require("dotenv");
+const fetch = require("node-fetch"); // Make sure to install: npm install node-fetch
+
+config();
 
 const app = express();
 
@@ -23,12 +27,45 @@ let nillionLock = false;
 // TODO: put as env variables or in a hashicorp vault
 const NILLION_BASE = "https://nillion-storage-apis-v0.onrender.com";
 const USER_SEED = "candor_ses_keys";
-const NILLION_APP_ID = "9f2efd72-7c24-4a1c-9ce8-47aaa57d35e4";
+const NILLION_APP_ID = "07223c9a-e97a-4bdf-b1c6-8390022c54e9";
+const SIGNER_PK = process.env.SIGNER_PK;
+const BACKEND_SIGNER = privateKeyToAccount(SIGNER_PK);
+const BACKEND_PUBLIC_KEY = BACKEND_SIGNER.address;
+console.log(`Signer started on ${BACKEND_PUBLIC_KEY}`);
+
+// const corsOptions = {
+//   origin: [
+//     "http://localhost:3010",
+//     "https://eth-bkk-private.vercel.app",
+//     "https://candor-three.vercel.app/",
+//   ],
+//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//   allowedHeaders: ["Content-Type", "Authorization"],
+//   credentials: true,
+//   optionsSuccessStatus: 200,
+// };
 
 app.use(cors());
 app.use(express.json());
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, Content-Length, X-Requested-With"
+  );
+
+  // Handle preflight requests
+  if (req.method === "OPTIONS") {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 
 app.get("/", (req, res) => res.send("Express on Vercel"));
+
+app.get("/test", (req, res) => res.send("test"));
 
 app.get("/verify-proof", async (req, res) => {
   // const proof = req.query.proof;
@@ -44,6 +81,11 @@ app.get("/verify-proof", async (req, res) => {
   //   // Usually these errors are due to a user having already verified.
   //   res.status(400).send(verifyRes);
   // }
+});
+
+app.get("/cron", (req, res) => {
+  console.log("cron job triggered");
+  processSessions()
 });
 
 app.post("/store-session", async (req, res) => {
@@ -165,6 +207,7 @@ const donateByBaseCurrency = (candor, beneficiaryId, amount, data) => {
 };
 
 async function processSessions() {
+  console.log("start process sessions...");
   if (nillionLock) return;
   nillionLock = true;
 
@@ -178,14 +221,15 @@ async function processSessions() {
 
     for (const { store_id, secret_name } of storeIds) {
       try {
-        const [address, chainId, timestamp] = secret_name.split("-");
+        const [address, chainId] = secret_name.split("-");
 
-        console.log("querying secret: ", secret_name);
+        console.log("querying secret: ", secret_name, "| store id: ", store_id);
         const { secret } = await fetch(
           `${NILLION_BASE}/api/secret/retrieve/${store_id}?retrieve_as_nillion_user_seed=${USER_SEED}&secret_name=${secret_name}`
         ).then((res) => res.json());
-        console.log("processing secret: ", secret);
+        console.log("value: ", secret);
 
+        const secretValue = JSON.parse(secret);
         const {
           sessionData,
           recurAmount,
@@ -194,26 +238,35 @@ async function processSessions() {
           times,
           interval,
           lastProcessed,
-        } = JSON.parse(secret);
+        } = secretValue;
 
-        if (
-          Date.now() < lastProcessed + interval || // already processed
-          (Number(times) !== -1 && Number(times) <= 0) // no more remaining times
-        ) {
-          console.log(`skipping secret ${secret_name}...`);
+        if (Date.now() < lastProcessed + interval) {
+          console.log(
+            `skipping secret ${secret_name} as last processed is recent...`
+          );
+          continue;
+        }
+
+        if (Number(times) !== -1 && Number(times) <= 0) {
+          console.log(`skipping secret ${secret_name} as times is 0...`);
           continue;
         }
 
         const { candor, usdc, bundler, paymaster, chain } = CONFIGS[chainId];
-        const sessionOwner = privateKeyToAccount(
-          sessionData.moduleData.permissionIds[0].startsWith("0x")
-            ? sessionData.moduleData.permissionIds[0]
-            : `0x${sessionData.moduleData.permissionIds[0]}`
-        );
+
+        const backendSessionData = {
+          granter: address,
+          sessionPublicKey: BACKEND_PUBLIC_KEY,
+          moduleData: {
+            permissionIds: sessionData.moduleData.permissionIds,
+            mode: SmartSessionMode.USE,
+          },
+        };
+
         const smartSession = await createNexusSessionClient({
           chain: chain,
-          accountAddress: sessionData.granter,
-          signer: sessionOwner,
+          accountAddress: backendSessionData.granter,
+          signer: BACKEND_SIGNER,
           transport: http(),
           bundlerTransport: http(bundler),
           paymaster: createBicoPaymasterClient({
@@ -223,8 +276,8 @@ async function processSessions() {
 
         const usePermissionsModule = toSmartSessionsValidator({
           account: smartSession.account,
-          signer: sessionOwner,
-          moduleData: sessionData.moduleData,
+          signer: BACKEND_SIGNER,
+          moduleData: backendSessionData.moduleData,
         });
 
         const useSmartSession = smartSession.extend(
@@ -244,17 +297,18 @@ async function processSessions() {
         });
         console.log(`Transaction hash: ${userOpHash}`);
 
-        body.times = Number(body.times) - 1;
-        body.lastProcessed = Date.now();
-
         const storeResponse = await fetch(
-          `${NILLION_BASE}/api/apps/${NILLION_APP_ID}/secrets`,
+          `${NILLION_BASE}/api/apps/${NILLION_APP_ID}/secrets/${store_id}`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               nillion_seed: USER_SEED,
-              secret_value: JSON.stringify(body),
+              secret_value: JSON.stringify({
+                ...secretValue,
+                times: secretValue.times - 1,
+                lastProcessed: Date.now(),
+              }),
               secret_name: secret_name,
             }),
           }
@@ -270,6 +324,7 @@ async function processSessions() {
     console.error("unable to process", err);
   } finally {
     nillionLock = false;
+    console.log("end process sessions...");
   }
 }
 
@@ -317,8 +372,8 @@ const CONFIGS = {
   },
 };
 
-setInterval(processSessions, 10_000);
-const PORT = 3002;
-app.listen(PORT, () => console.log(`Server ready on port ${PORT}.`));
+// setInterval(processSessions, 10_000);
+// const PORT = 3002;
+// app.listen(PORT, () => console.log(`Server ready on port ${PORT}.`));
 
 module.exports = app;

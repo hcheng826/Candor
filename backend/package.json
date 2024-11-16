@@ -16,10 +16,12 @@
   "description": "",
   "dependencies": {
     "@biconomy/sdk": "^0.0.10",
-    "@silencelaboratories/walletprovider-sdk": "^0.1.0",
     "@rhinestone/module-sdk": "^0.1.28",
+    "@silencelaboratories/walletprovider-sdk": "^0.1.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "node-fetch": "^2.6.6",
     "viem": "^2.21.45"
   }
 }
