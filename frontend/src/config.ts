@@ -13,7 +13,7 @@ export const APP_CONFIG = {
   name: "Condor",
   logoUrl: "",
   description: "",
-  worldAppId: "app_2bc85c373c1c38aa446a4f07487bdc59",
+  worldAppId: "app_staging_bb43e863a4ff2d2cf514a2a906710ee7",
   dynamicEnvironmentId: "487da2cf-a64b-48f6-9cf2-9ece6031d44b",
   pushChannelAddress: "0xB88460Bb2696CAb9D66013A05dFF29a28330689D",
   enableMiniKit: false,

@@ -49,3 +49,5 @@ export const getSmartAddressFromSmartAccount = (smartAccount: any) => {
 
   return "";
 };
+
+export const BACKEND_TRIGGOR = "0xC4a1089795CC5917DF4Ddc8B6A302Ee7275B991e";
