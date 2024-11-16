@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto";
 import { ethers } from "ethers";
 
 const WORLDCOIN_PROOF_PARAMS = [
@@ -20,11 +21,12 @@ export function encodeWorldcoinProof(
   nullifierHash: string = DUMMY_NULLIFIER_HASH,
   proof: string[] = DUMMY_PROOF
 ): string {
+  const dummyNullifier = randomBytes(32).toString("hex");
   const encoder = new ethers.AbiCoder();
   return encoder.encode(WORLDCOIN_PROOF_PARAMS, [
     signal,
     root,
-    nullifierHash,
+    dummyNullifier,
     proof,
   ]);
 }
