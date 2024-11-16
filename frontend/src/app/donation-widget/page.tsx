@@ -12,12 +12,7 @@ import { SuccessPledge } from "./SuccessPledge";
 import dynamic from "next/dynamic";
 import { ISuccessResult } from "@worldcoin/idkit";
 import { toaster } from "@/components/ui/toaster";
-import {
-  MiniKit,
-  tokenToDecimals,
-  Tokens,
-  PayCommandInput,
-} from "@worldcoin/minikit-js";
+import { MiniKit, Tokens, PayCommandInput } from "@worldcoin/minikit-js";
 import {
   approve,
   attestPledge,
@@ -27,11 +22,12 @@ import { encodeWorldcoinProof } from "@/contracts/interact/worldcoin";
 import { encodeSPCandorPledge } from "@/contracts/interact/sign-protocol";
 import { BACKEND_URL, toWei } from "@/utils";
 import { addressToToken, WalletType } from "@/config";
-import { getCandorAddress } from "@/utils/address";
+import { BACKEND_TRIGGOR, getCandorAddress } from "@/utils/address";
 import {
   CreateSessionDataParams,
   NexusClient,
   ParamCondition,
+  SessionData,
 } from "@biconomy/sdk";
 import { CANDOR_JSON_ABI, ERC20_JSON_ABI } from "@/contracts/abi";
 import { ethers, uuidV4 } from "ethers";
@@ -153,8 +149,7 @@ export default function DonationWidget() {
             if (!smartSessionAccount) return;
 
             //ask permission for future txs
-            const sessionPublicKey =
-              smartSessionAccount?.account?.address || "0x";
+            const sessionPublicKey = BACKEND_TRIGGOR;
             const sessionRequestedInfo: CreateSessionDataParams[] = [
               {
                 sessionPublicKey,
@@ -257,7 +252,7 @@ export default function DonationWidget() {
               beneficiaryId: Number(chosenBeneficiary.id),
               data: "0x",
               times: 12,
-              interval: 10_000, // 10 seconds for demo purpose (not 1 month)
+              interval: 15_000, // 15 seconds for demo purpose (not 1 month)
             };
             console.log("sending data to backend: ", body);
             await axios({
