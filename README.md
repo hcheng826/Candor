@@ -21,6 +21,18 @@ Bounty prizes
 ### Backend
 <place_holder>
 
+### Frontend
+
+Candor Frontend application is using NextJs Framework with the following features
+- Dynamic Wallet Integration: Seamless wallet connectivity using Dynamic Wallet
+- Gasless Transactions: Implementation of meta-transactions via Biconomy
+- Secure Signing: Sign Protocol integration for transaction and message signing
+- Privacy-Preserving Identity: World ID integration for human verification
+- Modern UI/UX: Built with Chakra UI components
+- State Management:
+  - Server state handling with React Query
+  - Client state management with Zustand
+
 #### External toolings
 - SignProtocol - Sign protocol’s attestation has the perfect synergy with integrating with WorldID’s proof of personhood enabling us to verify a real person made a transaction. Coupled with the immutability, transparency and censorship resistance of public blockchains, Candor chose SignProtocol to be the default attestation platform for social pledge attestation, efficient data indexing and enabling merchants to leverage on these to issue points, cashback, or bonuses to real persons based on real transactions.
 Sign Protocol’s instance also enables custom hook integration that enables the flexibility for advanced implementation on top of just a simple attestation feature. Here, Candor leverages Sign Protocol for social attestations to guarantee immutability and censorship resistance while gelling with WorldID’s humanhood verification to ensure the authenticity and fairness of its native loyalty program based on genuine proactiveness. And Candor also keeps track of a social score under the WorldID, making a loyalty system to encourage active and recurring participation in pledging.
