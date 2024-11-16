@@ -1,0 +1,8 @@
+type HookManager @entity {
+  # contract address
+  id: ID!
+  worldId: String!
+  externalNullifier: BigInt!
+  totalScore: BigInt!
+  totalPledges: BigInt!
+}

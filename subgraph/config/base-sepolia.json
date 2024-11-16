@@ -1,0 +1,7 @@
+{
+  "network": "base-sepolia",
+  "Candor_Address": "0x9341BEC4A59ae34f628D978f194b451Bc639bF7D",
+  "Candor_StartBlock": 17955748,
+  "CandorSPHook_Address": "0x2987a9b18b1d8FA449DF81406922008bebE31020",
+  "CandorSPHook_StartBlock": 17955740
+}

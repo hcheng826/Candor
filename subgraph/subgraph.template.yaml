@@ -1,0 +1,68 @@
+specVersion: 0.0.4
+schema:
+  file: ./schema.graphql
+features:
+  - ipfsOnEthereumContracts
+dataSources:
+  - kind: ethereum/contract
+    name: Candor
+    network: "{{network}}"
+    source:
+      address: "{{Candor_Address}}"
+      startBlock: {{Candor_StartBlock}}
+      abi: Candor
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - Candor
+        - Token
+      abis:
+        - name: Candor
+          file: ./abis/Candor.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: Initialised(address,address,address,address)
+          handler: handleInitialise
+        - event: BeneficiaryRegistered(indexed uint256,indexed address)
+          handler: handleRegisterBeneficiary
+        - event: BeneficiaryUpdate(indexed uint256,indexed address)
+          handler: handleUpdateBeneficiary
+        - event: DonationReceived(indexed uint256,indexed address,indexed uint256,uint256)
+          handler: handleDonationReceived
+        - event: DonationWithdrawn(indexed uint256,uint256)
+          handler: handleDonationWithdrawn
+        - event: PledgeAttested(indexed uint256,indexed address,indexed uint256,uint64)
+          handler: handlePledgeAttest
+      file: ./src/mappings/main.ts
+  # Candor SP Hook Contract
+  - kind: ethereum/contract
+    name: CandorSPHook
+    network: "{{network}}"
+    source:
+      address: "{{CandorSPHook_Address}}"
+      startBlock: {{CandorSPHook_StartBlock}}
+      abi: CandorSPHook
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      entities:
+        - SecondEntity
+      abis:
+        - name: CandorSPHook
+          file: ./abis/CandorSPHook.json
+      eventHandlers:
+        - event: Initialised(address,uint256)
+          handler: handleHookInitialise
+        - event: UserPledgeRewardMint(indexed uint256,indexed address,uint256,uint64)
+          handler: handleUserPledgeRewardMint
+        - event: UserPledgeRevokeBurn(indexed uint256,indexed address,uint256,uint64)
+          handler: handleUserPledgeRevokeBurn
+        - event: UserCollectorRegister(indexed uint256,address)
+          handler: handleUserCollectorRegister
+        - event: UserPledge(indexed uint256,indexed address,uint256,uint256)
+          handler: handleUserPledge
+      file: ./src/mappings/hook.ts

@@ -1,0 +1,20 @@
+enum ContributionMode {
+  BENEFICIARY
+  GENERIC
+  BENEFICIARY_PLEDGE
+}
+
+type Contribution @entity {
+  id: ID!
+  type: ContributionMode!
+  beneficiary: Beneficiary!
+  contributor: User!
+
+  pledgeAttestationId: BigInt!
+  amount: BigInt!
+  token: Token!
+  epoch: BigInt!
+
+  tx: Transaction!
+  timestamp: BigInt!
+}

@@ -1,0 +1,7 @@
+{
+  "network": "celo-alfajores",
+  "Candor_Address": "0x2FC978bDba0ae5f40E1adF6A924060dEed726E7c",
+  "Candor_StartBlock": 30789896,
+  "CandorSPHook_Address": "0x0Ce9551aC3DF1666d4F569FB88A80003DC43E7c7",
+  "CandorSPHook_StartBlock": 30789753
+}

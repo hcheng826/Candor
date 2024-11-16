@@ -1,0 +1,15 @@
+type Contributor @entity {
+  id: ID!
+  user: User!
+
+  # Donations
+  directAmount: BigInt!
+  genericAmount: BigInt!
+
+  # Count
+  pledgeCount: BigInt!
+  donationCount: BigInt!
+
+  # Social Scoring
+  worldIdUser: WorldIdUser
+}

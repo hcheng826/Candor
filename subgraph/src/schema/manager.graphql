@@ -1,0 +1,28 @@
+type Manager @entity {
+  # contract address
+  id: ID!
+  spAddress: String!
+  spHook: String!
+  baseCurrency: String!
+
+  txCount: BigInt!
+
+  # Donation-related
+  totalDonationReceived: BigInt!
+  totalDonationWithdrawn: BigInt!
+
+  # Mode-specific donation
+  genericDonationReceived: BigInt!
+  beneficiaryDonationReceived: BigInt!
+
+  # Social pledges
+  pledgeReceived: BigInt!
+
+  # Entities
+  beneficiaryCount: BigInt!
+  socialContributorCount: BigInt!
+  donorCount: BigInt!
+
+  # current owner of attestor contract
+  owner: String!
+}

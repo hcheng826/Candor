@@ -1,0 +1,7 @@
+type AttestationInfo @entity {
+  id: ID!
+  pledgeAttestationId: BigInt!
+  nullifierHash: BigInt!
+  contributor: String!
+  revoked: Boolean!
+}

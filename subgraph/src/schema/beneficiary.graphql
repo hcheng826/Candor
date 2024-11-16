@@ -1,0 +1,18 @@
+type Beneficiary @entity {
+  id: ID! # `beneficiary-${beneficiaryId}` ----> # Generic Pool `beneficiary-0`
+  beneficiaryId: BigInt!
+  user: User!
+
+  # Donations
+  directDonationReceived: BigInt!
+  clrMatchDonationReceived: BigInt!
+  socialMatchDonationReceived: BigInt!
+
+  # Count
+  pledgeCount: BigInt!
+  donorCount: BigInt!
+  contributorCount: BigInt!
+
+  # Withdrawn
+  withdrawn: BigInt!
+}

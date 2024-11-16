@@ -1,0 +1,10 @@
+enum UserType {
+  BENEFICIARY
+  GENERIC
+  CONTRIBUTOR
+}
+
+type User @entity {
+  id: ID!
+  type: UserType!
+}
