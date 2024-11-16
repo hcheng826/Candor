@@ -6,8 +6,8 @@ A transformative charitable gateway enabling seamless cross-token donations, ver
 Systemic inequality and limited access hinder equitable public fund distribution, while current 'fair distribution' methods fall short in ensuring true equity in fund matching.
 
 ## Demo:
-App: https://candor-three.vercel.app/
-Demo video: https://www.youtube.com/watch?v=U9G5etOK6_U
+- App: https://candor-three.vercel.app/
+- Demo video: https://www.youtube.com/watch?v=U9G5etOK6_U
 
 ## System
 
