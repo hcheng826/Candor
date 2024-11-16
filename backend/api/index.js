@@ -85,7 +85,7 @@ app.get("/verify-proof", async (req, res) => {
 
 app.get("/cron", (req, res) => {
   console.log("cron job triggered");
-  processSessions()
+  processSessions();
 });
 
 app.post("/store-session", async (req, res) => {
@@ -97,6 +97,9 @@ app.post("/store-session", async (req, res) => {
     const timestamp = Date.now();
 
     const secretName = `${sessionData.granter}-${chainId}-${timestamp}`;
+    res.status(200).json({
+      success: true,
+    });
 
     const storeResponse = await fetch(
       `${NILLION_BASE}/api/apps/${NILLION_APP_ID}/secrets`,
@@ -121,7 +124,6 @@ app.post("/store-session", async (req, res) => {
 
     const result = await storeResponse.json();
     console.log("secret stored at:", result);
-    res.status(200).json(result);
   } catch (error) {
     console.error("Error storing session:", error);
     res.status(500).json({ error: "Failed to store session" });
