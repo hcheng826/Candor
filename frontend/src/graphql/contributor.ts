@@ -159,7 +159,11 @@ const allContributorsQuery = gql`
 
 const contributorsByBenIdQuery = gql`
   query GetContributonsByBenId($benId: ID) {
-    contributions(where: { beneficiary_: { id: $benId } }) {
+    contributions(
+      where: { beneficiary_: { id: $benId } }
+      orderBy: timestamp
+      orderDirection: desc
+    ) {
       id
       type
       beneficiary {
