@@ -1,13 +1,14 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Candor Frontend
 
-## Tech Stack
+Candor Frontend application is using NextJs Framework with the following features
+- Dynamic Wallet Integration: Seamless wallet connectivity using Dynamic Wallet
+- Gasless Transactions: Implementation of meta-transactions via Biconomy
+- Secure Signing: Sign Protocol integration for transaction and message signing
+- Privacy-Preserving Identity: World ID integration for human verification
+- Modern UI/UX: Built with Chakra UI components
+- State Management:
+  - Server state handling with React Query
+  - Client state management with Zustand
 
-- dynamic wallet
-- biconomy
-- push protocol
-- sign protocol
-- world ID
-- chakra UI
-- ethers
-- react-query
-- zustand
+
+Demo can be seen live at [https://candor-three.vercel.app/](https://candor-three.vercel.app/)
