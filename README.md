@@ -2,10 +2,12 @@
 
 A transformative charitable gateway enabling seamless cross-token donations, verifiable social pledge attestations designed for socially fairer fund distributions.
 
-## Motivation/Problem
-<place_holder>
+## Motivation
+Systemic inequality and limited access hinder equitable public fund distribution, while current 'fair distribution' methods fall short in ensuring true equity in fund matching.
 
-## Demo Link: <place_holder>
+## Demo:
+- App: https://candor-three.vercel.app/
+- Demo video: https://www.youtube.com/watch?v=U9G5etOK6_U
 
 ## System
 
@@ -19,7 +21,7 @@ By integrating Sign Protocol, Candor leverages its social pledge schema and cust
 Bounty prizes
 
 ### Backend
-<place_holder>
+The backend acts as a minimally-trusted off-chain solver that uses Vercel serverless functions for automating recurring donations. Instead of a traditional database, Biconomy smart session data is securely encrypted and persistently stored using Nillion’s infrastructure - containing data such as grant permissions, donation amounts and scheduling details. A serverless cron job runs every fixed interval, processing pending donations and triggering donations on behalf of the user via Biconomy’s smart session. The serverless nature is chosen as it improves the reliability by being available to be run anywhere around the world.
 
 ### Frontend
 
@@ -46,9 +48,7 @@ World ID mini app kit also allows to create seamless native-like applications th
 
 - The Graph - Thanks to The Graph Protocol, Candor has near-instantaneous access to blockchain data through a developer-friendly API. With real-time listening capability, Candor can track firstly all its cash flow activities (from its main contract), secondly the respective on-chain review attestations from Sign Protocol & thirdly its human hood verification tracking & attestation social score system in an efficient manner without the need for complex infrastructure set-up. With the help of abstracting complex data structures, this not only services for simplifying blockchain data analytics but also ensures that scalability requirements can be effectively met as the amount of data generated increases exponentially.
 
-- Biconomy - With Biconomy's SDK, Candor transforms the user experience by integrating smart sessions and gasless transactions, making charitable giving seamless and accessible. Users can enjoy one-click donation flows with transaction bundling, removing complexities like gas management and ensuring smooth on-chain interactions.
-Biconomy's advanced relayer infrastructure also enables efficient session management and secure self-custody, enhancing both convenience and control. By leveraging these features, Candor significantly lowers barriers for new users, creating a Web3 experience that feels as intuitive as Web2.
-This integration highlights Biconomy’s potential to simplify blockchain interactions while driving real-world impact, aligning perfectly with Candor’s mission to make philanthropy effortless and transparent.
+- Biconomy - Candor revolutionizes charitable giving by leveraging Biconomy’s latest ERC-7579 compatible Nexus Smart Accounts. Users enjoy smooth one-click donation flows with transaction bundling and gasless transactions, removing complexities like gas management. Smart sessions enables innovative recurring donations without any request of repeated signatures, allowing users to schedule contributions that can only execute under a set of rules and policies. Biconomy's advanced relayer infrastructure also enables efficient session management and secure self-custody, enhancing both convenience and control. By leveraging these features, Candor significantly lowers barriers for new users, creating a Web3 experience that feels as intuitive as Web2 - one-click donations, batch processing, seamless gasless on-ramps and even periodic donations.
 
 - NounsDAO - As a public good aligned with its mission to democratize access and uplift grassroots initiatives, Candor's focus on charitable endeavors seamlessly integrates with Nouns' ethos as a community-owned brand. The synergy is reflected in the UI/UX, where Nouns art, avatars, and animations create an engaging, giving-centric theme that perfectly complements Candor’s vision of a world of giving and fairness.
 
@@ -68,3 +68,66 @@ This integration aligns with Mantle’s vision for gaming and social projects by
 
 - Celo - Candor leverages Celo's mobile-first blockchain to provide a low-cost, accessible platform for charitable donations in emerging markets. By integrating Celo’s Ethereum Layer-2 solution, Candor enables seamless mobile donations with low fees and no complex crypto processes.
 This integration simplifies global giving, allowing non-crypto native users to easily contribute and track pledges and driving social impact in underserved regions.
+
+## Sign Protocol feedback bounty
+- When pledging through an external contract, the Attestation schema utilised MUST have the attester field with field with address(this) else it will revert from the `SP.sol`'s check on `attestation.attester != _msgSender()` from (https://github.com/EthSign/sign-protocol-evm/blob/main/src/core/SP.sol#L686-L688) with a `AttestationWrongAttester()` error.
+  ``` Solidity
+          // Create a pledge attestation
+      Attestation memory pledgeAttestation = Attestation({
+          schemaId: pledgeSchemaId, // Schema for pledge
+          linkedAttestationId: 0,
+          attestTimestamp: uint64(block.timestamp),
+          revokeTimestamp: 0,
+          attester: address(this), // @NOTE: Transactee is the pledger in this case, else reverted
+          validUntil: 0, // No expiration for the review attestation
+          dataLocation: DataLocation.ONCHAIN,
+          revoked: false,
+          recipients: recipients,
+          data: pledge // Pledge metadata
+      });
+
+      bytes memory emptyData = new bytes(0);
+      bytes memory packedEncodedProof = abi.encodePacked(
+          encodedProof,
+          abi.encode(_getEpochIndex(block.timestamp)),
+          abi.encode(contributor)
+      );
+
+      // // Attest to sign protocol
+      attestationId = spInstance.attest(pledgeAttestation, "", emptyData, packedEncodedProof); // extraData for hook callback
+      // // Save the pledge attestation Id & emit event
+      uint256 contributionAmount = spHookInstance.balanceOf(contributor);
+      _contributeSocialPledge(beneficiaryId, attestationId, contributor, contributionAmount);
+  }
+  ```
+  - Refer to the @NOTE for explicit instructions as it is not clearly stated in the Sign Protocol EVM documentation.
+
+- Link Directory:
+  Given that Sign Protocol has multiple useful sites for different purposes such as the Sign Protocol attestation explorer, Schema builder etc. it will be easier for developers to navigate via introducing a subsection on the Gitbook with all the respective links on the left called 'Quick Directory' to include:
+
+  ![telegram-cloud-photo-size-5-6181212805672320235-x](https://github.com/user-attachments/assets/5741e298-f2a3-4c4b-85d9-7ae86ebc8cbd)
+
+
+  1. Address Book: https://docs.sign.global/for-builders/address-book
+  2. Schema Builder: https://app.sign.global/create-schema
+  3. Sign Protocol Attestation Explorer: https://scan.sign.global/
+  4. Sign Protocol Atestation Explorer (Testnet): https://testnet-scan.sign.global/
+  5.  SDK Tutorial: https://github.com/EthSign/sign-protocol-sdk-tutorial
+  6. Sign Protocol EVM: https://github.com/EthSign/sign-protocol-evm
+
+- Address Book URL on "Introduction" is a deprecated link, should be updated with (https://docs.sign.global/for-builders/address-book)
+
+  ![telegram-cloud-photo-size-5-6181212805672320236-y](https://github.com/user-attachments/assets/54f14288-3713-423f-88ac-41513f2cd47a)
+- Documentation not cleaned up. At this page: https://docs.sign.global/for-builders/getting-started, is not well cleaned up. Has sketchy notes.
+
+  <img width="677" alt="image" src="https://github.com/user-attachments/assets/876f5b13-d732-4e24-a1da-187e43d8979d">
+
+- Documentation layout and ordering suggestion:
+  - The [Fundamentals](https://docs.sign.global/for-builders/getting-started/definitions-and-notes) page is more like a reference page and can be put later rather than as the first page
+  - It's more common to have Supported Networks in the last rather then in the middle of development information
+  - Schema Hook is quite a important building block and it's under "Advanced Topic" now. Actually the exisiting example is simple enough to move it to "Getting Started" section. As many users first time will just ignore advanced topics
+ 
+    <img width="294" alt="image" src="https://github.com/user-attachments/assets/dba8d45a-da60-44ed-912e-f743e1358076">
+
+
+

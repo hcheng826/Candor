@@ -2,6 +2,11 @@
 
 Candor utilises The Graph Protocol for real-time blockchain data indexing across its core `Candor.sol` and `CandorSPHook.sol` custom hook implementation integrated with Sign Protocol's `SP.sol` main instance.
 
+## Deployed Endpoints
+- Base Sepolia: https://api.studio.thegraph.com/query/94972/candor-base-sepolia/version/latest
+- Polygon Amoy: https://api.studio.thegraph.com/query/94972/candor-polygon-amoy/version/latest
+- Celo Alfajores: https://api.studio.thegraph.com/query/94972/candor-celo-alfajores/version/latest
+
 ### Note on Preparation:
 
 To generate built schemas and artifacts:
