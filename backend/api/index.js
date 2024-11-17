@@ -27,7 +27,7 @@ let nillionLock = false;
 // TODO: put as env variables or in a hashicorp vault
 const NILLION_BASE = "https://nillion-storage-apis-v0.onrender.com";
 const USER_SEED = "candor_ses_keys";
-const NILLION_APP_ID = "07223c9a-e97a-4bdf-b1c6-8390022c54e9";
+const NILLION_APP_ID = "0703c601-55c9-4b35-a00c-ebf43445c148";
 const SIGNER_PK = process.env.SIGNER_PK;
 const BACKEND_SIGNER = privateKeyToAccount(SIGNER_PK);
 const BACKEND_PUBLIC_KEY = BACKEND_SIGNER.address;
